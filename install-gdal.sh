@@ -21,7 +21,7 @@ cd /tmp/gdal || die
 
 cd gdal || die
 ./configure --prefix=/usr/local --without-libtool --enable-debug --with-jpeg12 --with-python --with-poppler --with-podofo --with-spatialite --with-mysql --with-liblzma --with-webp --with-java --with-mdb --with-jvm-lib-add-rpath --with-epsilon --with-gta --with-ecw=/usr/local --with-mrsid=/usr/local --with-mrsid-lidar=/usr/local --with-fgdb=/usr/local --with-libkml --with-openjpeg=/usr/local || die
-make -j3 || die
+make -j7 || die
 cd apps || die
 make test_ogrsf || die
 cd .. || die
@@ -38,7 +38,7 @@ rm -f /usr/lib/libgdal.so* || die
 make install || die
 ldconfig || die
 cd ../autotest/cpp || die
-make -j3 || die
+make -j7 || die
 cd ../../gdal || die
 wget --no-verbose http://mdb-sqlite.googlecode.com/files/mdb-sqlite-1.0.2.tar.bz2 || die
 tar xjvf mdb-sqlite-1.0.2.tar.bz2 || die

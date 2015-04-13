@@ -62,7 +62,7 @@ wget --no-verbose https://bitbucket.org/chchrsc/kealib/get/c6d36f3db5e4.zip || d
 unzip c6d36f3db5e4.zip || die
 cd chchrsc-kealib-c6d36f3db5e4/trunk || die
 cmake . -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DHDF5_INCLUDE_DIR=/usr/include -DHDF5_LIB_PATH=/usr/lib -DLIBKEA_WITH_GDAL=OFF || die
-make -j4 || die
+make -j7 || die
 make install || die
 cd ../.. || die
 ldconfig || die
