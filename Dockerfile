@@ -1,23 +1,21 @@
 ##
-# geodata/gdal
+# systemapic/gis
 #
-# This creates an Ubuntu derived base image that installs the latest GDAL
-# subversion checkout compiled with a broad range of drivers.  The build
-# process closely follows that defined in
-# <https://github.com/OSGeo/gdal/blob/trunk/.travis.yml>
-#
-# Forked from: https://github.com/geo-data/gdal-docker
+# GDAL 1.11.2, released 2015/02/10
+# Mapnik v3.0.0-pre
+# Boost v1.58.0
+# Node.js v.0.12.2
+# GraphicsMagick 1.3.21 2015-02-28 Q8 http://www.GraphicsMagick.org/
+# PhantomJS 2.0.1-development
+# HPN SSH OpenSSH_6.6.1p1-hpn14v5 Ubuntu-5hpn14v5~wrouesnel~trusty2, OpenSSL 1.0.1f 6 Jan 2014
 
 # Ubuntu 14.04 Trusty Tahyr
 FROM ubuntu:trusty
 
 MAINTAINER Knut Ole Sjøli <knutole@systemapic.com>
 
-# Ensure the package repository is up to date
-RUN apt-get update -y
-
 # Install basic dependencies
-RUN apt-get install -y \
+RUN apt-get update -y && apt-get install -y \
     software-properties-common \
     python-software-properties \
     build-essential \
@@ -26,7 +24,8 @@ RUN apt-get install -y \
     openjdk-7-jdk \
     mysql-client \
     mysql-server \
-    unzip
+    unzip nmap pigz zip fish htop nano
+
 
 # Install Postgresql
 ADD ./install-postgres.sh /tmp/
@@ -50,10 +49,13 @@ ADD ./install-gdal.sh /tmp/
 RUN sh /tmp/install-gdal.sh
 
 # Install Mapnik dependencies
-RUN apt-get install software-properties-common python-software-properties -y
-# RUN add-apt-repository ppa:mapnik/boost && apt-get update
-RUN apt-get install -y \ 
-    libboost-dev libboost-filesystem-dev libboost-program-options-dev \
+# RUN apt-add-repository ppa:boost-latest/ppa
+RUN apt-add-repository ppa:mapnik/boost
+# RUN echo 'deb http://ppa.launchpad.net/boost-latest/ppa/ubuntu saucy main ' >> /etc/apt/sources.list
+RUN apt-get update -y && apt-get install -y \ 
+    libboost-dev \
+    software-properties-common python-software-properties \
+    libboost-filesystem-dev libboost-program-options-dev \
     libboost-python-dev libboost-regex-dev libboost-system-dev libboost-thread-dev \
     libboost-filesystem-dev \
     libboost-program-options-dev \
@@ -70,7 +72,11 @@ RUN apt-get install -y \
     libcairomm-1.0-1 libcairomm-1.0-dev \
     ttf-unifont ttf-dejavu ttf-dejavu-core ttf-dejavu-extra \
     git build-essential python-nose \
-    libgdal1-dev libsqlite3-dev fish htop nano || die
+    libgdal1-dev libsqlite3-dev || die
+
+# Install latest boost
+ADD ./install-boost.sh /tmp/
+RUN sh /tmp/install-boost.sh
 
 # Install Mapnik dependencies
 ADD ./install-mapnik-dependencies.sh /tmp/
@@ -79,6 +85,23 @@ RUN sh /tmp/install-mapnik-dependencies.sh
 # Install Mapnik
 ADD ./install-mapnik.sh /tmp/
 RUN sh /tmp/install-mapnik.sh
+
+# Install Node.js
+ADD ./install-nodejs.sh /tmp/
+RUN sh /tmp/install-nodejs.sh
+
+# Install npm extras
+RUN npm install grunt-cli -g
+RUN npm install nodemon -g
+RUN npm install forever -g
+
+# Install PhanomJS
+ADD ./install-phantomjs.sh /tmp/install-phantomjs.sh
+RUN sh /tmp/install-phantomjs.sh
+
+# Install Graphics Magick
+ADD ./install-graphicsmagick.sh /tmp/install-graphicsmagick.sh
+RUN sh /tmp/install-graphicsmagick.sh
 
 # Run the tests
 ADD ./test-gdal.sh /tmp/
